@@ -42,7 +42,7 @@ describe('/api/putReferral API Endpoint', () => {
     expect(console.error).toBeCalledTimes(0);
   });
 
-  it('should return a unsuccessful response from API with missing Solana address error', async () => {
+  it('should return a unsuccessful response from API with missing crypto address error', async () => {
     // Arrange
     const { req, res } = mockRequestResponse('POST');
     req.body = { cryptoAddress: '', referralCode: 'DUMMY-REFERRAL-CODE' };
@@ -52,20 +52,7 @@ describe('/api/putReferral API Endpoint', () => {
 
     // Assert
     expect(res.statusCode).toBe(400);
-    expect(res._getJSONData()).toEqual({ err: 'Missing Solana address in request body' });
-    expect(console.error).toBeCalledTimes(0);
-  });
-
-  it('should return a unsuccessful response from API with invalid Solana address error', async () => {
-    const { req, res } = mockRequestResponse('POST');
-    req.body = { cryptoAddress: 'dummy-solana-address', referralCode: 'DUMMY-REFERRAL-CODE' };
-
-    // Act
-    await putReferralHandler(req, res);
-
-    // Assert
-    expect(res.statusCode).toBe(400);
-    expect(res._getJSONData()).toEqual({ err: 'Invalid Solana address. Please enter a ed25519 address' });
+    expect(res._getJSONData()).toEqual({ err: 'Missing crypto address in request body' });
     expect(console.error).toBeCalledTimes(0);
   });
 
@@ -81,7 +68,7 @@ describe('/api/putReferral API Endpoint', () => {
 
     // Assert
     expect(res.statusCode).toBe(400);
-    expect(res._getJSONData()).toEqual({ err: 'Address is already linked to a referral code' });
+    expect(res._getJSONData()).toEqual({ err: 'Crypto address is already linked to a referral code' });
     expect(console.error).toBeCalledTimes(0);
   });
 

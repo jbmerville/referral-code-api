@@ -4,7 +4,6 @@ export const FIRESTORE_REFERRAL_CODE_DB_KEYS = {
   referralCode: 'referralCode',
   cryptoAddress: 'cryptoAddress',
   twitterAddress: 'twitterAddress',
-  parentReferralCode: 'parentReferralCode',
-  referredAddress: 'referredAddress',
-  parentcryptoAddress: 'parentcryptoAddress',
+  parentReferralCodeData: 'parentReferralCodeData',
+  referredAddresses: 'referredAddresses',
 };

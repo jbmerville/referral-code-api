@@ -1,46 +1,36 @@
-import { FIRESTORE_REFERRAL_CODE_DB_KEYS, FIRESTORE_REFERRAL_CODE_DB_NAME } from './constants';
-import { addDoc, collection, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { NewReferralType, ReferralType } from 'src/types/ReferralData';
+import { addDoc, collection, setDoc } from 'firebase/firestore';
 
-import { PutReferralParameters } from 'src/pages/api/putReferral';
+import { FIRESTORE_REFERRAL_CODE_DB_NAME } from './constants';
 import doesReferralExist from './doesReferralExist';
 import { firestore } from './clientApp';
 import { generate } from 'referral-codes';
-import getParentAddress from './getParentAddress';
+import getParentReferralDocumentId from './getParentReferralDocumentId';
+import updateParentReferralOnSignUp from './updateParentReferralOnSignUp';
 
-export interface ReferralDoc extends PutReferralParameters {
-  referredAddresses: string[];
-  parentReferralCode: string;
-  parentcryptoAddress?: string;
-}
-
-const putReferralCodeData = async (params: PutReferralParameters): Promise<string | undefined> => {
+const putReferralCodeData = async (params: NewReferralType): Promise<string> => {
   const { cryptoAddress, referralCode, twitterUsername, discordUsername } = params;
 
   try {
     let newReferralCode = generate({
-      prefix: '5CLUB-',
       charset: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
     })[0];
 
     while (await doesReferralExist(newReferralCode)) {
       newReferralCode = generate({
-        prefix: '5CLUB-',
         charset: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
       })[0];
     }
 
-    const parentcryptoAddress = await getParentAddress(referralCode);
+    const parentReferralDocumentId = await getParentReferralDocumentId(referralCode);
 
-    const newDoc: ReferralDoc = {
+    const newDoc: ReferralType = {
       cryptoAddress,
-      parentReferralCode: referralCode,
+      parentReferralDocumentId,
       referralCode: newReferralCode,
-      referredAddresses: [],
+      childrenReferralDocumentIds: [],
     };
 
-    if (parentcryptoAddress) {
-      newDoc.parentcryptoAddress = parentcryptoAddress;
-    }
     if (twitterUsername) {
       newDoc.twitterUsername = twitterUsername;
     }
@@ -48,35 +38,15 @@ const putReferralCodeData = async (params: PutReferralParameters): Promise<strin
       newDoc.discordUsername = discordUsername;
     }
 
-    await addDoc(collection(firestore, FIRESTORE_REFERRAL_CODE_DB_NAME), newDoc);
+    const doc = await addDoc(collection(firestore, FIRESTORE_REFERRAL_CODE_DB_NAME), newDoc);
 
-    await updatePreviousReferralCode(referralCode, cryptoAddress);
+    await updateParentReferralOnSignUp(referralCode, doc.id);
     return newReferralCode;
   } catch (error) {
-    console.error('Error generating new referral code', error);
+    const errorMessage = `Error generating new referral code`;
+    console.error(errorMessage, error);
+    throw Error(errorMessage);
   }
 };
 
-export const updatePreviousReferralCode = async (
-  referralCode: string,
-  newcryptoAddressReferred: string
-): Promise<void> => {
-  try {
-    const previousReferralQuery = query(
-      collection(firestore, FIRESTORE_REFERRAL_CODE_DB_NAME),
-      where(FIRESTORE_REFERRAL_CODE_DB_KEYS.referralCode, '==', referralCode)
-    );
-
-    const snapshot = await getDocs(previousReferralQuery);
-    const previousReferralData = snapshot.docs[0].data();
-    const newReferralData = {
-      ...previousReferralData,
-      referredAddresses: [...new Set([...previousReferralData.referredAddresses, newcryptoAddressReferred])],
-    };
-
-    await setDoc(snapshot.docs[0].ref, newReferralData);
-  } catch (error) {
-    console.error('Error linking Solana address to the given referral code');
-  }
-};
 export default putReferralCodeData;

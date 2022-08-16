@@ -15,7 +15,9 @@ const doesReferralExist = async (referralCode: string): Promise<boolean> => {
       res++;
     });
   } catch (error) {
-    console.error('Error from firestore while checking if the given referral code exist or not');
+    const errorMessage = `Error from firestore while checking if the given referral code exist or not`;
+    console.error(errorMessage, error);
+    throw Error(errorMessage);
   }
   return res > 0;
 };

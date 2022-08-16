@@ -3,18 +3,19 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 
 import { firestore } from './clientApp';
 
-const getParentAddress = async (referralCode: string): Promise<string | undefined> => {
+const getParentReferralDocumentId = async (referralCode: string): Promise<string> => {
   const isReferralUsedQuery = query(
     collection(firestore, FIRESTORE_REFERRAL_CODE_DB_NAME),
     where(FIRESTORE_REFERRAL_CODE_DB_KEYS.referralCode, '==', referralCode)
   );
   try {
     const snapshot = await getDocs(isReferralUsedQuery);
-    const { cryptoAddress } = snapshot.docs[0].data();
-    return cryptoAddress;
+    return snapshot.docs[0].id;
   } catch (error) {
-    console.error('Error from firestore while checking if the given referral code exist or not');
+    const errorMessage = `No referral code found for code: ${referralCode}`;
+    console.error(errorMessage, error);
+    throw Error(errorMessage);
   }
 };
 
-export default getParentAddress;
+export default getParentReferralDocumentId;

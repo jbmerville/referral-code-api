@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { RequestMethod, createMocks } from 'node-mocks-http';
 
 import doesReferralExist from 'src/firestore/doesReferralExist';
-import getReferralCodeData from 'src/firestore/getReferralCodeData';
+import getReferralByReferralCode from '@firestore/getReferralByReferralCode';
 import getRerralHandler from 'src/pages/api/getReferral/[referralCode]';
 
 interface HelloRequestResonseType {
@@ -10,7 +10,7 @@ interface HelloRequestResonseType {
   res: NextApiResponse<{ referralCode?: string; err?: string }>;
 }
 
-jest.mock('@firestore/getReferralCodeData');
+jest.mock('@firestore/getReferralByReferralCode');
 jest.mock('@firestore/doesReferralExist');
 jest.spyOn(global.console, 'error');
 
@@ -51,10 +51,10 @@ describe('/api/getReferral API Endpoint', () => {
     const expected = {
       referredAddresses: [MOCK_SOLANA_ADDRESS_1, MOCK_SOLANA_ADDRESS_2],
       referralCode: MOCK_REFERRAL_CODE,
-      parentReferralCode: MOCK_PARENT_REFERRAL_CODE,
+      parentReferralCodeData: MOCK_PARENT_REFERRAL_CODE,
     };
     req.query = { referralCode: MOCK_REFERRAL_CODE };
-    (getReferralCodeData as jest.Mock).mockReturnValue(expected);
+    (getReferralByReferralCode as jest.Mock).mockReturnValue(expected);
     (doesReferralExist as jest.Mock).mockReturnValue(true);
 
     // Act

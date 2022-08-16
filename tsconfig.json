@@ -16,7 +16,8 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@firestore/*": ["src/firestore/*"]
+      "@firestore/*": ["src/firestore/*"],
+      "@styles/*": ["src/styles/*"]
     },
     "downlevelIteration": true
   },

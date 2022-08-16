@@ -1,10 +1,10 @@
 import { FIRESTORE_REFERRAL_CODE_DB_KEYS, FIRESTORE_REFERRAL_CODE_DB_NAME } from './constants';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 
-import { ReferralDoc } from './putReferralCodeData';
+import { ReferralType } from 'src/types/ReferralData';
 import { firestore } from './clientApp';
 
-const getReferralCodeData = async (referralCode: string): Promise<ReferralDoc | undefined> => {
+const getReferralByReferralCode = async (referralCode: string): Promise<ReferralType> => {
   const getReferralCodeDataQuery = query(
     collection(firestore, FIRESTORE_REFERRAL_CODE_DB_NAME),
     where(FIRESTORE_REFERRAL_CODE_DB_KEYS.referralCode, '==', referralCode)
@@ -16,22 +16,22 @@ const getReferralCodeData = async (referralCode: string): Promise<ReferralDoc | 
       referralCode,
       cryptoAddress,
       twitterUsername,
-      referredAddresses,
-      parentReferralCode,
-      parentcryptoAddress,
+      parentReferralDocumentId,
+      childrenReferralDocumentIds,
     } = snapshot.docs[0].data();
     return {
       discordUsername,
       referralCode,
       cryptoAddress,
       twitterUsername,
-      referredAddresses,
-      parentReferralCode,
-      parentcryptoAddress,
+      parentReferralDocumentId,
+      childrenReferralDocumentIds,
     };
   } catch (error) {
-    console.error('Error from firestore while retrieving referral code data');
+    const errorMessage = `Error from firestore while retrieving referral code data`;
+    console.error(errorMessage, error);
+    throw Error(errorMessage);
   }
 };
 
-export default getReferralCodeData;
+export default getReferralByReferralCode;

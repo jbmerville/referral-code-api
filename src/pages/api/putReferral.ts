@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+import { NewReferralType } from 'src/types/ReferralData';
 import { PublicKey } from '@solana/web3.js';
 import doesReferralExist from 'src/firestore/doesReferralExist';
 import hasAddressUsedReferral from 'src/firestore/hasAddressUsedReferral';
@@ -10,13 +11,6 @@ type Data = {
   err?: string;
 };
 
-export interface PutReferralParameters {
-  cryptoAddress: string;
-  referralCode: string;
-  twitterUsername?: string;
-  discordUsername?: string;
-}
-
 export default async function putReferralHandler(req: NextApiRequest, res: NextApiResponse<Data>): Promise<void> {
   if (req.method === 'POST') {
     const { cryptoAddress, referralCode, twitterUsername, discordUsername } = req.body;
@@ -24,11 +18,9 @@ export default async function putReferralHandler(req: NextApiRequest, res: NextA
     if (!referralCode) {
       res.status(400).json({ err: 'Missing referral code in request body' });
     } else if (!cryptoAddress) {
-      res.status(400).json({ err: 'Missing Solana address in request body' });
-    } else if (!validateSolAddress(cryptoAddress)) {
-      res.status(400).json({ err: 'Invalid Solana address. Please enter a ed25519 address' });
+      res.status(400).json({ err: 'Missing crypto address in request body' });
     } else if (await hasAddressUsedReferral(cryptoAddress)) {
-      res.status(400).json({ err: 'Address is already linked to a referral code' });
+      res.status(400).json({ err: 'Crypto address is already linked to a referral code' });
     } else if (!(await doesReferralExist(referralCode))) {
       res.status(400).json({ err: 'Referral code does not exist' });
     } else {
@@ -39,7 +31,7 @@ export default async function putReferralHandler(req: NextApiRequest, res: NextA
   }
 }
 
-async function handleValidRequest(params: PutReferralParameters, res: NextApiResponse<Data>): Promise<void> {
+async function handleValidRequest(params: NewReferralType, res: NextApiResponse<Data>): Promise<void> {
   const newReferralCode = await putReferralCodeData(params);
   if (!newReferralCode) {
     res.status(400).json({ err: 'Error generating referral code' });
