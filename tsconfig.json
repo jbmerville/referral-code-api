@@ -1,26 +1,25 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
+    "module": "commonjs",
+    "noImplicitReturns": true,
+    "outDir": "dist",
+    "sourceMap": true,
     "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
+    "target": "ES2017",
     "esModuleInterop": true,
-    "module": "esnext",
+    "baseUrl": ".",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "baseUrl": ".",
     "paths": {
-      "@firestore/*": ["src/firestore/*"],
-      "@styles/*": ["src/styles/*"]
-    },
-    "downlevelIteration": true
+      "@handlers/*": ["src/handlers/*"],
+      "@services/*": ["src/services/*"],
+      "@models/*": ["src/models/*"]
+    }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
+  "compileOnSave": true,
+  "include": ["./src/**/*.ts"],
+  "exclude": ["node_modules"],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  }
 }

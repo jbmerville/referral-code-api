@@ -1,10 +1,12 @@
 # referral Code API
 
+## Swagger: https://api-d6nu5avtaq-uc.a.run.app/api-docs/
+
 ## About
 
 ### What is this repo?
 
-This is a Node, NextJS API for referral codes, with Firestore as the database. The API is also bundled with a few React/NextJS components to be used as a starter repo for the client.
+This is a Firebase Function + Express API for referral codes, with Firestore as the database.
 
 ### What can I do with the API?
 
@@ -13,7 +15,7 @@ This is a Node, NextJS API for referral codes, with Firestore as the database. T
 - View the referral code data: parent referral code, children referral code, data on children referral code actions.
 - [WIP] Send lifecyle emails update. When someone created a referral code or performed an action using your referral code.
 
-## Getting Started
+## Dev env setup
 
 First, install the following **VSCode extensions**: ESLint, Jest, sort-imports, Prettier - Code formatter.
 
@@ -26,7 +28,7 @@ npm run ci
 Finally, run the development server:
 
 ```bash
-npm run dev
+npm run server
 ```
 
 You will also need to run unit tests before making a pull request or changing the tests with:
@@ -35,41 +37,15 @@ You will also need to run unit tests before making a pull request or changing th
 npm run test
 ```
 
-The app (frontend + backend) will then be running at http://localhost:3000/
+## App Structure - Outdated
 
-## API endpoints
-
-### POST api/putReferral
-
-Endpoint to sign up for a new referral code. You will need to give a referral code that already exist. The data you pass is then saved in the database and get be accessed using the GET api/getRerral endpoint.
-
-_Sample body_:
-
-```json
-{
-  "cryptoAddress": "1BWutmTvYPwDtmw9abTkS4Ssr8no61spGAvW1X6NDix",
-  "referralCode": "TEST",
-  "twitterUsername": "",
-  "discordUsername": ""
-}
-```
-
-### GET api/getReferral/{REFERRAL-CODE}
-
-Endpoint to retrieve data about a referral code.
-
-## App Structure
+TODO - update this section
 
 - **pages** - where all the pages are found.
 - **components** - where all the commonly used components are found. Ex: button, links, input.
 - **pages/api** - where the backend apis are found, mostly to interact with the database.
 
 ## Resources
-
-**NextJS**: react library used to build a react app using server rendering. This allows the website to be cached by CDN => load faster + google search much more likely to be successful
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 **Firebase**:
 

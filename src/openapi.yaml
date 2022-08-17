@@ -1,0 +1,139 @@
+openapi: 3.0.3
+info:
+  title: Referral Code API
+  description: |-
+    API to create referral codes that are linked in between each other.
+
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://api-d6nu5avtaq-uc.a.run.app
+  - url: http://localhost:5001/club-five-4ee6a/us-central1/api
+tags:
+  - name: referral
+    description: Everything about referrals
+  - name: stats
+    description: Everything about stats of a referral
+paths:
+  /referral:
+    get:
+      tags:
+        - referral
+      summary: Get referral data on a referral code
+      description: Get referral data on a referral code on the current state and the other firebase documents linked.
+      parameters:
+        - name: referralCode
+          in: query
+          description: The referral code to get the data on
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetReferralResponse'
+        '400':
+          description: Invalid referral code type
+        '405':
+          description: Referral code does not exist, Error getting referral code data
+    put:
+      tags:
+        - referral
+      summary: Generate a new referral code
+      description: Generate a new referral code using another referral code. This will link both referral code together.
+      requestBody:
+        description: Generate a new referral code given the following body parameters
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutReferralRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PutReferralResponse'
+        '400':
+          description: Missing referral code in request body, Missing crypto address in request body
+        '405':
+          description: Input referral code does not exist, Crypto address is already linked to a referral code
+components:
+  schemas:
+    GetReferralResponse:
+      type: object
+      properties:
+        parentReferralDocumentId:
+          type: string
+          description: Firebase document id of the referral used to create the referral in the request
+          example: 'dFfLkPZtQtypaLOG0zKj'
+        childrenReferralDocumentIds:
+          type: array
+          description: Firebase document ids of the referrals that were generated using the referral in the request
+          items:
+            type: string
+            example: 'dFfLkPZtQtypaLOG0zKj'
+        cryptoAddress:
+          type: string
+          description: Any crypto address
+          example: '0xb794f5ea0ba39494ce839613fffba74279579268'
+        discordUsername:
+          type: string
+          description: Discord username
+          example: 'username#1234'
+        twitterUsername:
+          type: string
+          description: optional twitter username
+          example: 'username'
+        referralCode:
+          type: string
+          description: An existing referral code
+          example: 'TEST'
+      xml:
+        name: putReferralRequest
+    PutReferralRequest:
+      type: object
+      properties:
+        cryptoAddress:
+          type: string
+          description: Any crypto address
+          example: '0xb794f5ea0ba39494ce839613fffba74279579268'
+        discordUsername:
+          type: string
+          description: Discord username
+          example: 'username#1234'
+        twitterUsername:
+          type: string
+          description: optional twitter username
+          example: 'username'
+        referralCode:
+          type: string
+          description: An existing referral code
+          example: 'TEST'
+      xml:
+        name: putReferralRequest
+    PutReferralResponse:
+      type: object
+      properties:
+        referralCode:
+          type: string
+          description: The new referral code generated
+          example: 'TEST'
+      xml:
+        name: putReferralResponse
+  requestBodies:
+    Referral:
+      description: Data to generate a new referral code
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PutReferralRequest'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/PutReferralRequest'
