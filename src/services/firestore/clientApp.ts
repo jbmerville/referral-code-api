@@ -1,6 +1,6 @@
+import { firestore } from 'firebase-admin';
 import { getAnalytics } from 'firebase/analytics';
-import { getFirestore } from 'firebase/firestore';
-import { initializeApp } from 'firebase/app';
+import { initializeApp } from 'firebase-admin/app';
 
 const firebaseConfig = {
   apiKey: process.env.CLOUD_FUNCTION_API_KEY,
@@ -13,5 +13,6 @@ const firebaseConfig = {
 };
 
 export const app = initializeApp(firebaseConfig);
-export const firestore = getFirestore(app);
+export const db = firestore();
+
 // getAnalytics(app);

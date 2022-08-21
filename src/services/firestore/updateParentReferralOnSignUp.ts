@@ -1,28 +1,24 @@
-import { ReferralType } from '@models/ReferralModels';
-import getParentReferralDocumentId from './getParentReferralDocumentId';
-import { getReferralByDocumentId } from './getReferralByDocumentId';
+import { ExternalReferralType, ReferralType } from '@models/ReferralModels';
+
+import addReferral from './addReferral';
+import getReferralByReferralCode from './getReferralByReferralCode';
 import { logger } from 'firebase-functions/v2';
-import { setDoc } from 'firebase/firestore';
 
 export const updateParentReferralOnSignUp = async (
   parentReferralCode: string,
-  currentReferralDocumentId: string
+  currentReferral: ExternalReferralType
 ): Promise<void> => {
   try {
-    const parentReferralDocumentId = await getParentReferralDocumentId(parentReferralCode);
-    const parentReferral = await getReferralByDocumentId(parentReferralDocumentId);
-    const parentReferralData = parentReferral.data() as ReferralType;
-    const newReferralData: ReferralType = {
-      ...parentReferralData,
-      childrenReferralDocumentIds: [
-        ...new Set([...parentReferralData.childrenReferralDocumentIds, currentReferralDocumentId]),
-      ],
+    const parentReferral = await getReferralByReferralCode(parentReferralCode);
+    const newParentReferralData: ReferralType = {
+      ...parentReferral,
+      childrenReferrals: [...new Set([...parentReferral.childrenReferrals, currentReferral])],
     };
 
-    await setDoc(parentReferral.ref, newReferralData);
+    await addReferral(newParentReferralData);
   } catch (error) {
-    const errorMessage = `Error linking crypto address to the given referral code, ${error}`;
-    logger.error(errorMessage);
+    const errorMessage = `Error linking crypto address to the given referral code`;
+    logger.error(errorMessage, error);
     throw Error(errorMessage);
   }
 };

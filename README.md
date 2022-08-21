@@ -28,7 +28,7 @@ npm run ci
 Finally, run the development server:
 
 ```bash
-npm run server
+npm run serve
 ```
 
 You will also need to run unit tests before making a pull request or changing the tests with:

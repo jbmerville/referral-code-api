@@ -1,16 +1,13 @@
-import { addDoc, collection } from 'firebase/firestore';
-
 import { FIRESTORE_REFERRAL_CODE_DB_NAME } from './constants';
 import { ReferralType } from '@models/ReferralModels';
-import { firestore } from './clientApp';
+import { db } from './clientApp';
 import { logger } from 'firebase-functions/v2';
 
-const addReferral = async (referral: ReferralType): Promise<string> => {
+const addReferral = async (referral: ReferralType): Promise<void> => {
   try {
-    const doc = await addDoc(collection(firestore, FIRESTORE_REFERRAL_CODE_DB_NAME), referral);
-    return doc.id;
+    db.collection(FIRESTORE_REFERRAL_CODE_DB_NAME).doc(referral.referralCode).set(referral);
   } catch (error) {
-    const errorMessage = `Error adding referral  with data: ${referral}`;
+    const errorMessage = `Error adding referral with data: ${referral}`;
     logger.error(errorMessage, error);
     throw Error(errorMessage);
   }

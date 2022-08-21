@@ -16,8 +16,10 @@ const app = express();
 
 const loggingMiddleWare = (req: express.Request, res: express.Response, next: express.NextFunction): void => {
   const oldJson = res.json;
+  logger.log(`Received ${req.method} ${req.baseUrl}`);
+  logger.log(`Starting request with query: ${JSON.stringify(req.query)}, body: ${JSON.stringify(req.body)}`);
+
   res.json = (body: any): any => {
-    logger.log(`Starting request with query: ${JSON.stringify(req.query)}, body: ${JSON.stringify(req.body)}`);
     res.locals.body = body;
     logger.log(`Finishing with response: ${JSON.stringify(body)}`);
     return oldJson.call(res, body);
@@ -28,12 +30,10 @@ const loggingMiddleWare = (req: express.Request, res: express.Response, next: ex
 app.use(loggingMiddleWare);
 
 app.get('/referral', async (req, res) => {
-  logger.log(`Received GET /referral`);
   await getReferralHandler(req, res);
 });
 
 app.put('/referral', async (req, res) => {
-  logger.log(`Received PUT /referral`);
   await putReferralHandler(req, res);
 });
 
